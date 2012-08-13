@@ -13,6 +13,7 @@ class AppInfo {
 	String AppId;
 	String Issuance;
 	String Ext = DefaultUDID;
+	String environment;        //JR added this field for KB
 	
 	PackageInfo PackageInfo;
 	private String systemInfo;
@@ -45,6 +46,7 @@ class AppInfo {
 		{
 			StringUtils.append(builder, "Package name:  %s%n", PackageInfo.packageName);
 			StringUtils.append(builder, "Version name:  %s%n", PackageInfo.versionName);
+			StringUtils.append(builder, "KB Environment: %s", environment);
 			
 			StringUtils.append(builder, "%n");
 		}

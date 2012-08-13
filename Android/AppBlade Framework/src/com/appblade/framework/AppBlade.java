@@ -236,6 +236,53 @@ public class AppBlade {
 		exceptionsDirectory.mkdirs();
 		canWriteToDisk = exceptionsDirectory.exists();
 	}
+	
+	public static void register(Context context, String token, String secret, String uuid, String issuance, String environment)
+	{
+		// Check params
+		if(context == null)
+		{
+			throw new IllegalArgumentException("Invalid context registered with AppBlade");
+		}
+
+		if(
+				StringUtils.isNullOrEmpty(token) ||
+				StringUtils.isNullOrEmpty(secret) ||
+				StringUtils.isNullOrEmpty(uuid) ||
+				StringUtils.isNullOrEmpty(issuance))
+		{
+			throw new IllegalArgumentException("Invalid application info registered with AppBlade");
+		}
+
+		// Initialize App Info
+		appInfo = new AppInfo();
+		appInfo.AppId = uuid;
+		appInfo.Token = token;
+		appInfo.Secret = secret;
+		appInfo.Issuance = issuance;
+		appInfo.environment = environment;
+
+		// Set the device ID for exception reporting requests
+		String accessToken = RemoteAuthHelper.getAccessToken(context);
+		setDeviceId(accessToken);
+
+		registerExceptionHandler();
+
+		try
+		{
+			String packageName = context.getPackageName();
+			int flags = PackageManager.GET_PERMISSIONS;
+			appInfo.PackageInfo = context.getPackageManager().getPackageInfo(packageName, flags);
+		}
+		catch (Exception ex) { }
+
+		rootDir = String.format("%s/%s",
+				context.getFilesDir().getAbsolutePath(),
+				AppBladeExceptionsDirectory);
+		File exceptionsDirectory = new File(rootDir);
+		exceptionsDirectory.mkdirs();
+		canWriteToDisk = exceptionsDirectory.exists();
+	}
 
 	public boolean isRegistered() {
 		return
